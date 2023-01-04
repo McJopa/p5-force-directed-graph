@@ -44,10 +44,10 @@ const Spring = () => {
                 // p.random(0, 255 / 2)
             );
 
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 10; i++) {
                 const ballA = new Mover.Mover(
-                    -100,
-                    0,
+                    p.random(-100, 100),
+                    p.random(-100, 100),
                     25,
                     p.color(
                         p.random(0, 255),
@@ -77,7 +77,13 @@ const Spring = () => {
                 //     }
                 // }
                 const ballB = p.balls[0];
-                const connection = new Connection(ballA, ballB, 10, 10, p);
+                const connection = new Connection(
+                    ballA,
+                    ballB,
+                    p.random(0.0000001, 0.1),
+                    p.random(100, 300),
+                    p
+                );
                 p.connections.push(connection);
             }
             ballA = new Mover.Mover(
@@ -106,7 +112,21 @@ const Spring = () => {
                 10,
                 p
             );
-            connection = new Connection(ballA, ballB, 10, 10, p);
+            connection = new Connection(ballA, ballB, 0.01, 1000, p);
+
+            const force = p.random(0, 50);
+            ballA.applyForce(
+                p.createVector(
+                    p.random(-1 * force, force),
+                    p.random(-1 * force, force)
+                )
+            );
+            ballB.applyForce(
+                p.createVector(
+                    p.random(-1 * force, force),
+                    p.random(-1 * force, force)
+                )
+            );
         };
 
         //---RENDER---//
@@ -121,39 +141,29 @@ const Spring = () => {
             // push current viewport properties
             p.push();
 
-            const force = p.random(0, 1);
-            connection.display(true);
-            ballA.applyForce(
-                p.createVector(
-                    p.random(-1 * force, force),
-                    p.random(-1 * force, force)
-                )
-            );
-            ballB.applyForce(
-                p.createVector(
-                    p.random(-1 * force, force),
-                    p.random(-1 * force, force)
-                )
-            );
+            // connection.display(true);
+            connection.applyForce();
             ballA.update();
             ballB.update();
-            ballA.display();
-            ballB.display();
-            // const [, ...rest] = p.balls;
-            // p.connections.forEach((connection) => {
-            //     connection.display(true);
-            // });
-            // rest.forEach((ball) => {
-            //     const force = p.random(0, 1);
-            //     ball.applyForce(
-            //         p.createVector(
-            //             p.random(-1 * force, force),
-            //             p.random(-1 * force, force)
-            //         )
-            //     );
-            //     ball.update();
-            //     ball.display();
-            // });
+            // ballA.display();
+            // ballB.display();
+            p.balls[0].display();
+            const [, ...rest] = p.balls;
+            p.connections.forEach((connection) => {
+                connection.applyForce();
+                connection.display(true);
+            });
+            rest.forEach((ball) => {
+                // const force = p.random(0, 10);
+                // ball.applyForce(
+                //     p.createVector(
+                //         p.random(-1 * force, force),
+                //         p.random(-1 * force, force)
+                //     )
+                // );
+                ball.update();
+                ball.display();
+            });
             p.pop();
 
             // handle viewport move

@@ -8,11 +8,30 @@ export class Connection {
         this.springStrength = springStrength;
         this.springLength = springLength;
         this.p = p5instance;
+        this.minCompression = springLength / 2;
+        this.airFriction = 0.5;
     }
 }
 
 Connection.prototype.applyForce = function () {
-    console.log("applying force");
+    const dist = this.p.dist(
+        this.moverA.position.x,
+        this.moverA.position.y,
+        this.moverB.position.x,
+        this.moverB.position.y
+    );
+    let kx = (this.springLength - dist) * this.springStrength * -1;
+    kx /= this.airFriction;
+    const moverADirection = p5.Vector.sub(
+        this.moverB.position,
+        this.moverA.position
+    );
+    moverADirection.normalize();
+
+    let force = p5.Vector.mult(moverADirection, kx);
+    this.moverA.applyForce(force);
+    this.moverB.applyForce(p5.Vector.mult(force, -1));
+    console.log(dist, this.springLength);
 };
 
 Connection.prototype.display = function (visible) {

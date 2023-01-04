@@ -1,4 +1,4 @@
-import p5 from "p5"
+import p5 from "p5";
 
 export class Mover {
     constructor(xPos, yPos, radius, color, mass, p5instance) {
@@ -9,6 +9,7 @@ export class Mover {
         this.velocity = p5instance.createVector(0, 0);
         this.acceleration = p5instance.createVector(0, 0);
         this.p = p5instance;
+        this.airFriction = 0.97;
     }
 }
 
@@ -29,9 +30,10 @@ Mover.prototype.applyForce = function (force) {
 Mover.prototype.update = function () {
     // acceleration changes velocity over time
     this.velocity.add(this.acceleration);
+    this.velocity.mult(this.airFriction);
     // velocity changes position over time
     this.position.add(this.velocity);
+
     // clear acceleration each frame
     this.acceleration.mult(0);
 };
-
