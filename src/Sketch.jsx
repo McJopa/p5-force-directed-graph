@@ -1,6 +1,6 @@
 import p5 from "p5";
 import React from "react";
-
+import starImage from "./asterisk-01.png";
 // class ScreenProperties {
 //     constructor(height, width, scale) {
 //         this.height = height;
@@ -13,7 +13,7 @@ import React from "react";
 //     }
 // }
 
-const Sketch = ({ color }) => {
+const Sketch = () => {
     const sketchRef = React.createRef();
     const sketch = (p) => {
         p.view = {
@@ -27,41 +27,69 @@ const Sketch = ({ color }) => {
         };
         p.x = p.view.origin.x;
         p.y = p.view.origin.y;
-        p.setup = () => {
-            p.createCanvas(p.view.width, p.view.height);
-            p.background(0);
-        };
 
+        p.preload = () => {
+            p.img = p.loadImage(starImage);
+        };
+        p.setup = () => {
+            p.ellipseMode(p.CENTER);
+            p.rectMode(p.CENTER);
+            p.createCanvas(p.view.width, p.view.height);
+        };
+        p.mousePrev = {
+            x: 0,
+            y: 0,
+        };
         p.draw = () => {
-            if (p.mouseIsPressed) {
-                p.handleMouseMove();
-            }
+            p.background(0);
+            p.push();
+            p.translate(p.view.origin.x, p.view.origin.y);
             p.scale(p.view.scale);
+            // p.translate(
+            //     p.view.desired.x - p.view.origin.x,
+            //     p.view.desired.y - p.view.origin.y
+            // );
+            // p.view.origin = p.view.desired;
             p.fill(
                 p.color(
                     p.random(0, 255),
                     p.random(0, 255),
-                    p.random(0, 255),
-                    p.random(0, 255 / 2)
+                    p.random(0, 255)
+                    // p.random(0, 255 / 2)
                 )
             );
             p.noStroke();
-            p.circle(p.x, p.y, 50);
-            p.x += p.random(-10, 10);
-            p.y += p.random(-10, 10);
+            p.circle(0, 0, 25);
+            p.image(p.img, 0, 0);
+            // p.image(p.img, 20, 20, 20);
+            // p.x += p.random(-10, 10);
+            // p.y += p.random(-10, 10);
+            p.pop();
+            if (p.mouseIsPressed) {
+                p.handleMouseMove();
+            }
+            p.mousePrev.x = p.mouseX;
+            p.mousePrev.y = p.mouseY;
         };
 
         p.handleMouseMove = () => {
             console.log("mouse clicked!");
             console.log(p.mouseX, p.mouseY);
+            const x = p.mouseX - p.mousePrev.x;
+            const y = p.mouseY - p.mousePrev.y;
+            p.view.origin.x += x;
+            p.view.origin.y += y;
+            console.log(x, y);
         };
 
         p.mouseWheel = (e) => {
+            let sf;
             if (e.delta > 0) {
-                p.view.scale *= 1.05;
+                sf = 1.05;
             } else {
-                p.view.scale *= 0.95;
+                sf = 0.95;
             }
+            p.view.scale *= sf;
         };
     };
     React.useEffect(() => {

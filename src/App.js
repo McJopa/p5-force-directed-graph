@@ -1,12 +1,14 @@
 import Sketch from "./Sketch";
 import p5 from "p5"
+import Spring from "./Spring";
 function App() {
 
   return (
     <div style={{
       height: "100vh"
     }} className="App">
-      <Sketch ></Sketch>
+      {/* <Sketch ></Sketch> */}
+      <Spring></Spring>
     </div>
   );
 }
