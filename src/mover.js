@@ -9,7 +9,7 @@ export class Mover {
         this.velocity = p5instance.createVector(0, 0);
         this.acceleration = p5instance.createVector(0, 0);
         this.p = p5instance;
-        this.airFriction = 0.97;
+        this.airFriction = 0.99;
     }
 }
 

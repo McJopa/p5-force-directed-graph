@@ -36,7 +36,7 @@ const Spring = () => {
             p.ellipseMode(p.CENTER);
             p.rectMode(p.CENTER);
             p.createCanvas(p.view.width, p.view.height);
-
+            p.scale(0.1);
             const c = p.color(
                 p.random(0, 255),
                 p.random(0, 255),
@@ -44,18 +44,18 @@ const Spring = () => {
                 // p.random(0, 255 / 2)
             );
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 1000; i++) {
                 const ballA = new Mover.Mover(
                     p.random(-100, 100),
                     p.random(-100, 100),
-                    25,
+                    5,
                     p.color(
                         p.random(0, 255),
                         p.random(0, 255),
                         p.random(0, 255)
                         // p.random(0, 255)
                     ),
-                    10,
+                    50,
                     p
                 );
                 p.balls.push(ballA);
@@ -79,12 +79,19 @@ const Spring = () => {
                 const ballB = p.balls[0];
                 const connection = new Connection(
                     ballA,
-                    ballB,
+                    p.balls[Math.floor(p.random(0, p.balls.length))],
                     p.random(0.0000001, 0.1),
                     p.random(100, 300),
                     p
                 );
-                p.connections.push(connection);
+                const connection2 = new Connection(
+                    ballA,
+                    p.balls[Math.floor(p.random(0, p.balls.length))],
+                    p.random(0.0000001, 0.1),
+                    p.random(100, 300),
+                    p
+                );
+                p.connections.push(connection, connection2);
             }
             ballA = new Mover.Mover(
                 -100,
@@ -93,8 +100,8 @@ const Spring = () => {
                 p.color(
                     p.random(0, 255),
                     p.random(0, 255),
-                    p.random(0, 255)
-                    // p.random(0, 255)
+                    p.random(0, 255),
+                    p.random(0, 100)
                 ),
                 10,
                 p

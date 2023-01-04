@@ -31,11 +31,10 @@ Connection.prototype.applyForce = function () {
     let force = p5.Vector.mult(moverADirection, kx);
     this.moverA.applyForce(force);
     this.moverB.applyForce(p5.Vector.mult(force, -1));
-    console.log(dist, this.springLength);
 };
 
 Connection.prototype.display = function (visible) {
-    this.p.stroke(255, 255, 255, visible ? 100 : 0);
+    this.p.stroke(255, 255, 255, visible ? 20 : 0);
     this.p.line(
         this.moverA.position.x,
         this.moverA.position.y,
