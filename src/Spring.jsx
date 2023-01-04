@@ -14,7 +14,7 @@ const Spring = () => {
         p.view = {
             width: sketchRef.current.clientWidth,
             height: sketchRef.current.clientHeight,
-            scale: 1,
+            scale: 0.1,
             origin: {
                 x: sketchRef.current.clientWidth / 2,
                 y: sketchRef.current.clientHeight / 2,
@@ -36,24 +36,25 @@ const Spring = () => {
             p.ellipseMode(p.CENTER);
             p.rectMode(p.CENTER);
             p.createCanvas(p.view.width, p.view.height);
-            p.scale(0.1);
             const c = p.color(
-                p.random(0, 255),
-                p.random(0, 255),
-                p.random(0, 255)
+                // p.random(0, 255),
+                // p.random(0, 255),
+                // p.random(0, 255)
                 // p.random(0, 255 / 2)
+                255
             );
 
             for (let i = 0; i < 1000; i++) {
                 const ballA = new Mover.Mover(
                     p.random(-100, 100),
                     p.random(-100, 100),
-                    5,
+                    10,
                     p.color(
-                        p.random(0, 255),
-                        p.random(0, 255),
-                        p.random(0, 255)
+                        // p.random(0, 255),
+                        // p.random(0, 255),
                         // p.random(0, 255)
+                        // p.random(0, 255)
+                        255
                     ),
                     50,
                     p
@@ -79,16 +80,18 @@ const Spring = () => {
                 const ballB = p.balls[0];
                 const connection = new Connection(
                     ballA,
-                    p.balls[Math.floor(p.random(0, p.balls.length))],
+                    p.balls[Math.floor(p.random(0, 0))],
                     p.random(0.0000001, 0.1),
-                    p.random(100, 300),
+                    p.random(100, 10),
+                    false,
                     p
                 );
                 const connection2 = new Connection(
                     ballA,
                     p.balls[Math.floor(p.random(0, p.balls.length))],
                     p.random(0.0000001, 0.1),
-                    p.random(100, 300),
+                    p.random(100, 9999),
+                    true,
                     p
                 );
                 p.connections.push(connection, connection2);
@@ -119,7 +122,7 @@ const Spring = () => {
                 10,
                 p
             );
-            connection = new Connection(ballA, ballB, 0.01, 1000, p);
+            connection = new Connection(ballA, ballB, 0.01, 1000, false, p);
 
             const force = p.random(0, 50);
             ballA.applyForce(
