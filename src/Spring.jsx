@@ -14,13 +14,14 @@ const Spring = () => {
         p.view = {
             width: sketchRef.current.clientWidth,
             height: sketchRef.current.clientHeight,
-            scale: 0.1,
+            scale: 1,
             origin: {
                 x: sketchRef.current.clientWidth / 2,
                 y: sketchRef.current.clientHeight / 2,
             },
         };
-
+        p.dragging = false;
+        p.dragRef = "";
         // Prev mouse obj for tracking
         p.mousePrev = {
             x: 0,
@@ -33,114 +34,88 @@ const Spring = () => {
         p.connections = [];
         //---SETUP---//
         p.setup = () => {
-            p.ellipseMode(p.CENTER);
-            p.rectMode(p.CENTER);
+            // p.ellipseMode(p.CENTER);
+            // p.rectMode(p.CENTER);
             p.createCanvas(p.view.width, p.view.height);
             const c = p.color(
                 // p.random(0, 255),
                 // p.random(0, 255),
                 // p.random(0, 255)
                 // p.random(0, 255 / 2)
-                255
+                100
             );
-
-            for (let i = 0; i < 1000; i++) {
-                const ballA = new Mover.Mover(
-                    p.random(-100, 100),
-                    p.random(-100, 100),
-                    10,
-                    p.color(
-                        // p.random(0, 255),
-                        // p.random(0, 255),
-                        // p.random(0, 255)
-                        // p.random(0, 255)
-                        255
-                    ),
-                    50,
+            const root = new Mover.Mover(
+                0,
+                0,
+                50,
+                p.color(0, 255, 255),
+                500,
+                p
+            );
+            p.balls.push(root);
+            for (let i = 0; i < 20; i++) {
+                const size = p.random(10, 30);
+                const secondary = new Mover.Mover(
+                    p.random(-200, 200),
+                    p.random(-200, 200),
+                    size,
+                    p.color(255, 0, 255),
+                    size,
                     p
                 );
-                p.balls.push(ballA);
-            }
-
-            for (let index = 1; index < p.balls.length; index++) {
-                const ballA = p.balls[index];
-                // for (let j = 0; j < p.balls.length; j++) {
-                //     if (j != index) {
-                //         const ballB = p.balls[j];
-                //         const connection = new Connection(
-                //             ballA,
-                //             ballB,
-                //             10,
-                //             10,
-                //             p
-                //         );
-                //         p.connections.push(connection);
-                //     }
-                // }
-                const ballB = p.balls[0];
+                p.balls.push(secondary);
                 const connection = new Connection(
-                    ballA,
-                    p.balls[Math.floor(p.random(0, 0))],
-                    p.random(0.0000001, 0.1),
-                    p.random(100, 10),
-                    false,
-                    p
-                );
-                const connection2 = new Connection(
-                    ballA,
-                    p.balls[Math.floor(p.random(0, p.balls.length))],
-                    p.random(0.0000001, 0.1),
-                    p.random(100, 9999),
+                    root,
+                    secondary,
+                    20 * size,
+                    9000 / size,
                     true,
                     p
                 );
-                p.connections.push(connection, connection2);
+                p.connections.push(connection);
             }
-            ballA = new Mover.Mover(
-                -100,
-                0,
-                25,
-                p.color(
-                    p.random(0, 255),
-                    p.random(0, 255),
-                    p.random(0, 255),
-                    p.random(0, 100)
-                ),
-                10,
-                p
-            );
-            ballB = new Mover.Mover(
+            const randomConnection = new Connection(
+                p.balls[1],
+                p.balls[2],
                 100,
-                0,
-                25,
-                p.color(
-                    p.random(0, 255),
-                    p.random(0, 255),
-                    p.random(0, 255)
-                    // p.random(0, 255)
-                ),
-                10,
+                100,
+                true,
                 p
             );
-            connection = new Connection(ballA, ballB, 0.01, 1000, false, p);
+            p.connections.splice(1, 1);
+            p.connections.push(randomConnection);
 
-            const force = p.random(0, 50);
-            ballA.applyForce(
-                p.createVector(
-                    p.random(-1 * force, force),
-                    p.random(-1 * force, force)
-                )
-            );
-            ballB.applyForce(
-                p.createVector(
-                    p.random(-1 * force, force),
-                    p.random(-1 * force, force)
-                )
-            );
+            const [, ...secondaryList] = p.balls;
+            secondaryList.forEach((secondary) => {
+                for (let i = 0; i < 10; i++) {
+                    const child = new Mover.Mover(
+                        p.random(-200, 200),
+                        p.random(-200, 200),
+                        10,
+                        p.color(255, 255, 0),
+                        10,
+                        p
+                    );
+                    p.balls.push(child);
+                    const connection = new Connection(
+                        secondary,
+                        child,
+                        20,
+                        40,
+                        true,
+                        p
+                    );
+                    p.connections.push(connection);
+                }
+            });
         };
 
         //---RENDER---//
         p.draw = () => {
+            p.curMouse = {
+                x: p.mouseX / p.view.scale - p.view.origin.x / p.view.scale,
+                y: p.mouseY / p.view.scale - p.view.origin.y / p.view.scale,
+            };
             p.background(0);
 
             // set origin to middle of screen
@@ -149,44 +124,89 @@ const Spring = () => {
             p.scale(p.view.scale);
 
             // push current viewport properties
-            p.push();
-
-            // connection.display(true);
-            connection.applyForce();
-            ballA.update();
-            ballB.update();
-            // ballA.display();
-            // ballB.display();
+            // p.push();
             p.balls[0].display();
             const [, ...rest] = p.balls;
             p.connections.forEach((connection) => {
                 connection.applyForce();
-                connection.display(true);
+                connection.display();
             });
-            rest.forEach((ball) => {
-                // const force = p.random(0, 10);
-                // ball.applyForce(
-                //     p.createVector(
-                //         p.random(-1 * force, force),
-                //         p.random(-1 * force, force)
-                //     )
-                // );
-                ball.update();
-                ball.display();
-            });
-            p.pop();
+            for (let i = 0; i < rest.length; i++) {
+                for (let j = 0; j < rest.length; j++) {
+                    if (i != j) {
+                        const dir = p5.Vector.sub(
+                            rest[j].position,
+                            rest[i].position
+                        );
+                        const dirMag = dir.mag();
+                        dir.normalize();
+                        const repulsionForce = p5.Vector.mult(
+                            dir,
+                            9000 / (dirMag * dirMag)
+                        );
+                        rest[j].applyForce(repulsionForce);
+                    }
+                }
+            }
 
             // handle viewport move
             if (p.mouseIsPressed) {
                 p.handleMouseMove();
             }
+            rest.forEach((ball) => {
+                ball.update();
+                ball.display();
+            });
 
             // set new mouse coords
-            p.mousePrev.x = p.mouseX;
-            p.mousePrev.y = p.mouseY;
+            p.mousePrev.x = p.curMouse.x;
+            p.mousePrev.y = p.curMouse.y;
+
+            p.text(
+                `x: ${Math.floor(p.curMouse.x)} y: ${Math.floor(p.curMouse.y)}`,
+                p.curMouse.x,
+                p.curMouse.y
+            );
+            p.balls.forEach((ball) => {
+                p.push();
+                p.fill(255);
+                p.text(
+                    `x:${Math.floor(ball.position.x)} y:${Math.floor(
+                        ball.position.y
+                    )}`,
+                    ball.position.x,
+                    ball.position.y
+                );
+                const d = p.dist(
+                    ball.position.x,
+                    ball.position.y,
+                    p.curMouse.x,
+                    p.curMouse.y
+                );
+
+                if (d < ball.r) {
+                    console.log("intersecting");
+                    p.stroke(255, 0, 0);
+                    p.line(
+                        ball.position.x,
+                        ball.position.y,
+                        p.curMouse.x,
+                        p.curMouse.y
+                    );
+                }
+                p.pop();
+            });
+            // p.pop();
         };
 
         // calc distance to translate viewport
+        p.mousePressed = function () {
+            console.log(p.mouseX - p.view.origin.x, p.mouseY - p.view.origin.y);
+            p.balls.forEach((ball) => {
+                ball.handleClick();
+            });
+        };
+
         p.handleMouseMove = () => {
             const x = p.mouseX - p.mousePrev.x;
             const y = p.mouseY - p.mousePrev.y;

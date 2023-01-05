@@ -28,14 +28,16 @@ Connection.prototype.applyForce = function () {
         this.moverB.position.x,
         this.moverB.position.y
     );
-    let kx = (this.springLength - dist) * this.springStrength * -1;
+
+    // let kx = (this.springLength - dist) * this.springStrength * -1;
     const moverADirection = p5.Vector.sub(
         this.moverB.position,
         this.moverA.position
     );
     moverADirection.normalize();
+    const f = this.springStrength * Math.log(dist / this.springLength);
 
-    let force = p5.Vector.mult(moverADirection, kx);
+    let force = p5.Vector.mult(moverADirection, f < -1000 ? -1000 : f);
     this.moverA.applyForce(force);
     this.moverB.applyForce(p5.Vector.mult(force, -1));
 };
@@ -45,7 +47,7 @@ Connection.prototype.display = function () {
         this.visible ? 255 : 0,
         255,
         this.visible ? 255 : 0,
-        this.visible ? 2 : 0
+        this.visible ? 20 : 0
     );
     this.p.line(
         this.moverA.position.x,
