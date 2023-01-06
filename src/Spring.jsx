@@ -20,44 +20,14 @@ const Spring = () => {
             1,
             p
         );
-
-        p.view = {
-            width: sketchRef.current.clientWidth,
-            height: sketchRef.current.clientHeight,
-            scale: 1,
-            origin: {
-                x: sketchRef.current.clientWidth / 2,
-                y: sketchRef.current.clientHeight / 2,
-            },
-            offset: {
-                x: 0,
-                y: 0,
-            },
-        };
-        p.dragging = false;
-        p.dragRef = "";
-        // Prev mouse obj for tracking
-        p.mousePrev = {
-            x: 0,
-            y: 0,
-        };
-        let ballA;
-        let ballB;
-        let connection;
         p.balls = [];
         p.connections = [];
+
         //---SETUP---//
         p.setup = () => {
             // p.ellipseMode(p.CENTER);
             // p.rectMode(p.CENTER);
-            p.createCanvas(p.view.width, p.view.height);
-            const c = p.color(
-                // p.random(0, 255),
-                // p.random(0, 255),
-                // p.random(0, 255)
-                // p.random(0, 255 / 2)
-                100
-            );
+            p.createCanvas(p.World.width, p.World.height);
             const root = new Mover.Mover(
                 0,
                 0,
@@ -66,6 +36,7 @@ const Spring = () => {
                 500,
                 p
             );
+
             p.balls.push(root);
             for (let i = 0; i < 10; i++) {
                 const size = p.random(10, 30);
@@ -126,20 +97,11 @@ const Spring = () => {
 
         //---RENDER---//
         p.draw = () => {
-            p.curMouse = {
-                x: p.mouseX / p.view.scale - p.view.origin.x / p.view.scale,
-                y: p.mouseY / p.view.scale - p.view.origin.y / p.view.scale,
-            };
+            p.World.update();
             p.background(0);
-            // set origin to middle of screen
-            p.translate(
-                p.view.origin.x + p.view.offset.x,
-                p.view.origin.y + p.view.offset.y
-            );
-            p.scale(p.view.scale);
-            // set view scale
-            // push current viewport properties
-            // p.push();
+            p.translate(p.World.offset.x, p.World.offset.y);
+            p.scale(p.World.scale);
+
             p.balls[0].display();
             const [, ...rest] = p.balls;
             p.connections.forEach((connection) => {
@@ -174,14 +136,12 @@ const Spring = () => {
             });
 
             // set new mouse coords
-            p.mousePrev.x = p.mouseX;
-            p.mousePrev.y = p.mouseY;
 
-            p.text(
-                `x: ${Math.floor(p.curMouse.x)} y: ${Math.floor(p.curMouse.y)}`,
-                p.curMouse.x,
-                p.curMouse.y
-            );
+            // p.text(
+            //     `x: ${Math.floor(p.World.x)} y: ${Math.floor(p.curMouse.y)}`,
+            //     p.curMouse.x,
+            //     p.curMouse.y
+            // );
             p.balls.forEach((ball) => {
                 p.push();
                 p.fill(255);
@@ -192,21 +152,22 @@ const Spring = () => {
                     ball.position.x,
                     ball.position.y
                 );
-                const d = p.dist(
+                let d = p.dist(
+                    p.World.relativeMouse.x,
+                    p.World.relativeMouse.y,
                     ball.position.x,
-                    ball.position.y,
-                    p.curMouse.x,
-                    p.curMouse.y
+                    ball.position.y
                 );
-
                 if (d < ball.r) {
+                    p.push();
                     p.stroke(255, 0, 0);
                     p.line(
+                        p.World.relativeMouse.x,
+                        p.World.relativeMouse.y,
                         ball.position.x,
-                        ball.position.y,
-                        p.curMouse.x,
-                        p.curMouse.y
+                        ball.position.y
                     );
+                    p.pop();
                 }
                 p.pop();
             });
@@ -220,22 +181,15 @@ const Spring = () => {
         };
 
         p.handleMouseMove = () => {
-            const x = p.mouseX - p.mousePrev.x;
-            const y = p.mouseY - p.mousePrev.y;
-            p.view.offset.x += x;
-            p.view.offset.y += y;
+            const x = p.mouseX - p.pmouseX;
+            const y = p.mouseY - p.pmouseY;
+            p.World.desiredOffset.x += x * p.World.panSpeed;
+            p.World.desiredOffset.y += y * p.World.panSpeed;
         };
 
         // calc amount to scale viewport
         p.mouseWheel = (e) => {
-            let sf;
-            if (e.delta > 0) {
-                sf = 0.95;
-            } else {
-                sf = 1.05;
-            }
-            p.view.scale *= sf;
-            p.translate(p.curMouse.x, p.curMouse.y);
+            p.World.handleZoom(e.deltaY);
         };
     };
 

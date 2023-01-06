@@ -40,19 +40,15 @@ Mover.prototype.update = function () {
     this.acceleration.mult(0);
 };
 
-Mover.prototype.setRadius = function (r) {
-    this.r = r;
-};
-
 Mover.prototype.handleClick = function () {
-    let d = this.p.dist(
-        // this.p.mouseX - this.p.view.origin.x,
-        // this.p.mouseY - this.p.view.origin.y,
-        this.p.view.origin.x - this.p.mousePrev.x,
-        this.p.view.origin.y - this.p.mousePrev.y,
-        this.position.x,
-        this.position.y
-    );
+    // let d = this.p.dist(
+    //     // this.p.mouseX - this.p.view.origin.x,
+    //     // this.p.mouseY - this.p.view.origin.y,
+    //     this.p.World.offset.x - this.p.mousePrev.x,
+    //     this.p.view.origin.y - this.p.mousePrev.y,
+    //     this.position.x,
+    //     this.position.y
+    // );
     // console.log(
     //     d,
     //     this.r,
@@ -61,11 +57,7 @@ Mover.prototype.handleClick = function () {
     //     this.p.mouseX - this.p.view.origin.x,
     //     this.p.mouseY - this.p.view.origin.y
     // );
-    if (d < this.r) {
-        console.log("clicked!");
-    }
-};
-
-Mover.prototype.getPosition = function () {
-    return this.position;
+    // if (d < this.r) {
+    //     console.log("clicked!");
+    // }
 };

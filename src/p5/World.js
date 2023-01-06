@@ -8,12 +8,19 @@ export class World {
             originOffset == p5instance.CENTER
                 ? p5instance.createVector(width / 2, height / 2)
                 : originOffset;
+        this.desiredOffset = this.offset;
         this.scale = scale;
         this.relativeMouse = p5instance.createVector(0, 0);
         this.p = p5instance;
+        this.panSpeed = 2;
     }
 
     update() {
+        this.offset = p5.Vector.lerp(
+            this.offset,
+            this.desiredOffset,
+            this.panSpeed / 15
+        );
         this.relativeMouse = this.p
             .createVector(this.p.mouseX, this.p.mouseY)
             .sub(this.offset)
@@ -25,6 +32,8 @@ export class World {
         this.scale *= s;
 
         const mouse = this.p.createVector(this.p.mouseX, this.p.mouseY);
-        this.offset.sub(mouse).div(s).add(mouse);
+        this.offset.sub(mouse).mult(s).add(mouse);
+        this.desiredOffset = this.offset;
+        console.log(this.offset);
     }
 }
