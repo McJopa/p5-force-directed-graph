@@ -110,7 +110,7 @@ const Spring = () => {
             });
             for (let i = 0; i < rest.length; i++) {
                 for (let j = 0; j < rest.length; j++) {
-                    if (i != j) {
+                    if (i !== j) {
                         const dir = p5.Vector.sub(
                             rest[j].position,
                             rest[i].position
@@ -202,7 +202,7 @@ const Spring = () => {
             // cleanup p5 instance
             myp5.remove();
         };
-    }, []);
+    });
 
     // p5 canvas obj
     return (

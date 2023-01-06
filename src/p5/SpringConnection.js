@@ -1,4 +1,3 @@
-import { Mover } from "./Mover";
 import p5 from "p5";
 
 export class Connection {

@@ -5,7 +5,7 @@ export class World {
         this.width = width;
         this.height = height;
         this.offset =
-            originOffset == p5instance.CENTER
+            originOffset === p5instance.CENTER
                 ? p5instance.createVector(width / 2, height / 2)
                 : originOffset;
         this.desiredOffset = this.offset;
