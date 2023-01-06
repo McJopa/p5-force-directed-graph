@@ -1,4 +1,4 @@
-import { Mover } from "./mover";
+import { Mover } from "./Mover";
 import p5 from "p5";
 
 export class Connection {
@@ -47,7 +47,7 @@ Connection.prototype.display = function () {
         this.visible ? 255 : 0,
         255,
         this.visible ? 255 : 0,
-        this.visible ? 20 : 0
+        this.visible ? 200 : 0
     );
     this.p.line(
         this.moverA.position.x,

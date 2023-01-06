@@ -1,8 +1,9 @@
 import p5 from "p5";
 import React from "react";
-import starImage from "./asterisk-01.png";
-import * as Mover from "./mover";
-import { Connection } from "./SpringConnection";
+import * as Mover from "./p5/Mover";
+import { Connection } from "./p5/SpringConnection";
+import { World } from "./p5/World";
+
 // P5 Canvas Instance
 const Spring = () => {
     // dom obj ref
@@ -11,6 +12,15 @@ const Spring = () => {
     // create instance
     const sketch = (p) => {
         // viewport properties
+
+        p.World = new World(
+            sketchRef.current.clientWidth,
+            sketchRef.current.clientHeight,
+            p.CENTER,
+            1,
+            p
+        );
+
         p.view = {
             width: sketchRef.current.clientWidth,
             height: sketchRef.current.clientHeight,
@@ -18,6 +28,10 @@ const Spring = () => {
             origin: {
                 x: sketchRef.current.clientWidth / 2,
                 y: sketchRef.current.clientHeight / 2,
+            },
+            offset: {
+                x: 0,
+                y: 0,
             },
         };
         p.dragging = false;
@@ -53,7 +67,7 @@ const Spring = () => {
                 p
             );
             p.balls.push(root);
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 const size = p.random(10, 30);
                 const secondary = new Mover.Mover(
                     p.random(-200, 200),
@@ -87,7 +101,7 @@ const Spring = () => {
 
             const [, ...secondaryList] = p.balls;
             secondaryList.forEach((secondary) => {
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < 5; i++) {
                     const child = new Mover.Mover(
                         p.random(-200, 200),
                         p.random(-200, 200),
@@ -117,12 +131,13 @@ const Spring = () => {
                 y: p.mouseY / p.view.scale - p.view.origin.y / p.view.scale,
             };
             p.background(0);
-
             // set origin to middle of screen
-            p.translate(p.view.origin.x, p.view.origin.y);
-            // set view scale
+            p.translate(
+                p.view.origin.x + p.view.offset.x,
+                p.view.origin.y + p.view.offset.y
+            );
             p.scale(p.view.scale);
-
+            // set view scale
             // push current viewport properties
             // p.push();
             p.balls[0].display();
@@ -159,8 +174,8 @@ const Spring = () => {
             });
 
             // set new mouse coords
-            p.mousePrev.x = p.curMouse.x;
-            p.mousePrev.y = p.curMouse.y;
+            p.mousePrev.x = p.mouseX;
+            p.mousePrev.y = p.mouseY;
 
             p.text(
                 `x: ${Math.floor(p.curMouse.x)} y: ${Math.floor(p.curMouse.y)}`,
@@ -185,7 +200,6 @@ const Spring = () => {
                 );
 
                 if (d < ball.r) {
-                    console.log("intersecting");
                     p.stroke(255, 0, 0);
                     p.line(
                         ball.position.x,
@@ -196,12 +210,10 @@ const Spring = () => {
                 }
                 p.pop();
             });
-            // p.pop();
         };
 
         // calc distance to translate viewport
         p.mousePressed = function () {
-            console.log(p.mouseX - p.view.origin.x, p.mouseY - p.view.origin.y);
             p.balls.forEach((ball) => {
                 ball.handleClick();
             });
@@ -210,8 +222,8 @@ const Spring = () => {
         p.handleMouseMove = () => {
             const x = p.mouseX - p.mousePrev.x;
             const y = p.mouseY - p.mousePrev.y;
-            p.view.origin.x += x;
-            p.view.origin.y += y;
+            p.view.offset.x += x;
+            p.view.offset.y += y;
         };
 
         // calc amount to scale viewport
@@ -223,6 +235,7 @@ const Spring = () => {
                 sf = 1.05;
             }
             p.view.scale *= sf;
+            p.translate(p.curMouse.x, p.curMouse.y);
         };
     };
 
