@@ -41,23 +41,23 @@ Mover.prototype.update = function () {
 };
 
 Mover.prototype.handleClick = function () {
-    // let d = this.p.dist(
-    //     // this.p.mouseX - this.p.view.origin.x,
-    //     // this.p.mouseY - this.p.view.origin.y,
-    //     this.p.World.offset.x - this.p.mousePrev.x,
-    //     this.p.view.origin.y - this.p.mousePrev.y,
-    //     this.position.x,
-    //     this.position.y
-    // );
-    // console.log(
-    //     d,
-    //     this.r,
-    //     this.position.x,
-    //     this.position.y,
-    //     this.p.mouseX - this.p.view.origin.x,
-    //     this.p.mouseY - this.p.view.origin.y
-    // );
-    // if (d < this.r) {
-    //     console.log("clicked!");
-    // }
+    let d = this.p.dist(
+        this.p.mouseX - this.p.view.origin.x,
+        this.p.mouseY - this.p.view.origin.y,
+        this.p.World.offset.x - this.p.mousePrev.x,
+        this.p.view.origin.y - this.p.mousePrev.y,
+        this.position.x,
+        this.position.y
+    );
+    console.log(
+        d,
+        this.r,
+        this.position.x,
+        this.position.y,
+        this.p.mouseX - this.p.view.origin.x,
+        this.p.mouseY - this.p.view.origin.y
+    );
+    if (d < this.r) {
+        console.log("clicked!");
+    }
 };
